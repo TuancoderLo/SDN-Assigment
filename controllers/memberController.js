@@ -1,6 +1,64 @@
 const Member = require("../models/Member");
 const bcrypt = require("bcrypt");
 
+// @desc    Get all members
+// @route   GET /api/members
+// @access  Public
+exports.getAllMembers = async (req, res) => {
+  try {
+    const { search, page = 1, limit = 12 } = req.query;
+
+    let query = {};
+
+    // Search by member name or email
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Calculate pagination
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    const startIndex = (pageNum - 1) * limitNum;
+
+    // Get total count for pagination
+    const total = await Member.countDocuments(query);
+
+    const members = await Member.find(query)
+      .select("-password") // Don't send password
+      .sort({ createdAt: -1 })
+      .skip(startIndex)
+      .limit(limitNum);
+
+    // Calculate pagination info
+    const pagination = {
+      page: pageNum,
+      pages: Math.ceil(total / limitNum),
+      total,
+      limit: limitNum,
+      hasNext: pageNum < Math.ceil(total / limitNum),
+      hasPrev: pageNum > 1,
+    };
+
+    res.json({
+      success: true,
+      count: members.length,
+      data: {
+        members,
+        pagination,
+      },
+    });
+  } catch (error) {
+    console.error("Error in getAllMembers:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 // @desc    Get member profile
 // @route   GET /api/members/:id
 // @access  Private (Self only)

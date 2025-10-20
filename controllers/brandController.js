@@ -5,14 +5,34 @@ const Brand = require("../models/Brand");
 // @access  Public
 exports.getAllBrands = async (req, res) => {
   try {
-    const brands = await Brand.find().sort({ brandName: 1 });
+    const { search } = req.query;
+
+    let query = {};
+
+    // Search by brand name
+    if (search) {
+      query.brandName = { $regex: search, $options: "i" };
+    }
+
+    const brands = await Brand.find(query).sort({ brandName: 1 });
+
+    // Transform data to match frontend expectations
+    const transformedBrands = brands.map((brand) => ({
+      _id: brand._id,
+      name: brand.brandName, // Map brandName to name
+      description: brand.description,
+      country: brand.country,
+      createdAt: brand.createdAt,
+      updatedAt: brand.updatedAt,
+    }));
 
     res.json({
       success: true,
-      count: brands.length,
-      data: brands,
+      count: transformedBrands.length,
+      data: transformedBrands,
     });
   } catch (error) {
+    console.error("Error in getAllBrands:", error);
     res.status(500).json({
       success: false,
       message: error.message,

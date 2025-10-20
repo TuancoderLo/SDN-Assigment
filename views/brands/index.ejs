@@ -1,75 +1,84 @@
 <div class="container py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="display-5 text-center mb-4">
-                <i class="fas fa-tags me-3"></i>
-                Perfume Brands
-            </h1>
-            <p class="text-center text-muted">Discover perfumes from the world's most prestigious fragrance houses</p>
-        </div>
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="display-5 text-center mb-4">
+        <i class="fas fa-tags me-3"></i>
+        Perfume Brands
+      </h1>
+      <p class="text-center text-muted">
+        Discover perfumes from the world's most prestigious fragrance houses
+      </p>
     </div>
-    
-    <!-- Search -->
-    <div class="row mb-4">
-        <div class="col-md-6 mx-auto">
-            <div class="input-group">
-                <span class="input-group-text">
-                    <i class="fas fa-search"></i>
-                </span>
-                <input type="text" class="form-control" id="searchInput" placeholder="Search brands...">
-            </div>
-        </div>
+  </div>
+
+  <!-- Search -->
+  <div class="row mb-4">
+    <div class="col-md-6 mx-auto">
+      <div class="input-group">
+        <span class="input-group-text">
+          <i class="fas fa-search"></i>
+        </span>
+        <input
+          type="text"
+          class="form-control"
+          id="searchInput"
+          placeholder="Search brands..."
+        />
+      </div>
     </div>
-    
-    <!-- Brands Grid -->
-    <div class="row" id="brands-container">
-        <!-- Loading spinner -->
-        <div class="col-12 text-center">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <p class="mt-2">Loading brands...</p>
-        </div>
+  </div>
+
+  <!-- Brands Grid -->
+  <div class="row" id="brands-container">
+    <!-- Loading spinner -->
+    <div class="col-12 text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Loading brands...</p>
     </div>
+  </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener("DOMContentLoaded", function () {
     loadBrands();
-    
+
     // Search functionality
-    document.getElementById('searchInput').addEventListener('input', utils.debounce(loadBrands, 300));
-});
+    document
+      .getElementById("searchInput")
+      .addEventListener("input", utils.debounce(loadBrands, 300));
+  });
 
-async function loadBrands() {
-    const searchTerm = document.getElementById('searchInput').value;
-    const container = document.getElementById('brands-container');
-    
+  async function loadBrands() {
+    const searchTerm = document.getElementById("searchInput").value;
+    const container = document.getElementById("brands-container");
+
     utils.showLoading(container);
-    
-    try {
-        const queryParams = new URLSearchParams({
-            search: searchTerm
-        });
-        
-        const response = await fetch(`/api/brands?${queryParams}`);
-        const data = await response.json();
-        
-        if (data.success) {
-            displayBrands(data.data);
-        } else {
-            utils.showError(container, data.message);
-        }
-    } catch (error) {
-        utils.showError(container, 'Error loading brands. Please try again.');
-    }
-}
 
-function displayBrands(brands) {
-    const container = document.getElementById('brands-container');
-    
+    try {
+      const queryParams = new URLSearchParams({
+        search: searchTerm,
+      });
+
+      const response = await fetch(`/api/brands?${queryParams}`);
+      const data = await response.json();
+
+      if (data.success) {
+        displayBrands(data.data);
+      } else {
+        utils.showError(container, data.message);
+      }
+    } catch (error) {
+      utils.showError(container, "Error loading brands. Please try again.");
+    }
+  }
+
+  function displayBrands(brands) {
+    const container = document.getElementById("brands-container");
+
     if (brands.length === 0) {
-        container.innerHTML = `
+      container.innerHTML = `
             <div class="col-12 text-center">
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>
@@ -77,10 +86,12 @@ function displayBrands(brands) {
                 </div>
             </div>
         `;
-        return;
+      return;
     }
-    
-    container.innerHTML = brands.map(brand => `
+
+    container.innerHTML = brands
+      .map(
+        (brand) => `
         <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
             <div class="card h-100 shadow-sm">
                 <div class="card-body text-center">
@@ -88,20 +99,26 @@ function displayBrands(brands) {
                         <i class="fas fa-tags fa-3x text-primary"></i>
                     </div>
                     <h5 class="card-title">${brand.name}</h5>
-                    <p class="card-text text-muted">${brand.description || 'Premium fragrance brand'}</p>
+                    <p class="card-text text-muted">${
+                      brand.description || "Premium fragrance brand"
+                    }</p>
                     <p class="card-text">
                         <small class="text-muted">
                             <i class="fas fa-map-marker-alt me-1"></i>
-                            ${brand.country || 'International'}
+                            ${brand.country || "International"}
                         </small>
                     </p>
-                    <a href="/perfumes?brand=${brand._id}" class="btn btn-primary">
+                    <a href="/perfumes?brand=${
+                      brand._id
+                    }" class="btn btn-primary">
                         <i class="fas fa-spray-can me-1"></i>
                         View Perfumes
                     </a>
                 </div>
             </div>
         </div>
-    `).join('');
-}
+    `
+      )
+      .join("");
+  }
 </script>

@@ -28,6 +28,25 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Health check endpoint
+app.get("/api/health", (req, res) => {
+  const mongoose = require("mongoose");
+  const dbStatus = mongoose.connection.readyState;
+  const dbStates = {
+    0: "disconnected",
+    1: "connected",
+    2: "connecting",
+    3: "disconnecting",
+  };
+
+  res.json({
+    success: true,
+    server: "running",
+    database: dbStates[dbStatus] || "unknown",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // UI Routes
 app.use("/", require("./routes/uiRoutes"));
 

@@ -5,7 +5,15 @@ const Perfume = require("../models/Perfume");
 // @access  Public
 exports.getAllPerfumes = async (req, res) => {
   try {
-    const { search, brand, targetAudience, concentration } = req.query;
+    const {
+      search,
+      brand,
+      targetAudience,
+      concentration,
+      page = 1,
+      limit = 10,
+      featured,
+    } = req.query;
 
     let query = {};
 
@@ -29,16 +37,80 @@ exports.getAllPerfumes = async (req, res) => {
       query.concentration = concentration;
     }
 
-    const perfumes = await Perfume.find(query)
-      .populate("brand", "brandName")
-      .sort({ createdAt: -1 });
+    // Calculate pagination
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    const startIndex = (pageNum - 1) * limitNum;
+
+    // Check MongoDB connection before querying
+    if (!require("mongoose").connection.readyState) {
+      return res.status(503).json({
+        success: false,
+        message: "Database connection not available",
+      });
+    }
+
+    // Get total count for pagination with timeout
+    const total = await Promise.race([
+      Perfume.countDocuments(query),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Count query timeout")), 5000)
+      ),
+    ]);
+
+    // Get perfumes with timeout
+    const perfumes = await Promise.race([
+      Perfume.find(query)
+        .populate("brand", "brandName")
+        .sort({ createdAt: -1 })
+        .skip(startIndex)
+        .limit(limitNum)
+        .lean(), // Use lean() for better performance
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Find query timeout")), 5000)
+      ),
+    ]);
+
+    // Transform data to match frontend expectations
+    const transformedPerfumes = perfumes.map((perfume) => ({
+      _id: perfume._id,
+      name: perfume.perfumeName, // Map perfumeName to name
+      description: perfume.description,
+      price: perfume.price,
+      size: perfume.volume, // Map volume to size
+      brand: perfume.brand
+        ? {
+            _id: perfume.brand._id,
+            name: perfume.brand.brandName, // Map brandName to name
+          }
+        : null,
+      targetAudience: perfume.targetAudience,
+      concentration: perfume.concentration,
+      ingredients: perfume.ingredients,
+      createdAt: perfume.createdAt,
+      updatedAt: perfume.updatedAt,
+    }));
+
+    // Calculate pagination info
+    const pagination = {
+      page: pageNum,
+      pages: Math.ceil(total / limitNum),
+      total,
+      limit: limitNum,
+      hasNext: pageNum < Math.ceil(total / limitNum),
+      hasPrev: pageNum > 1,
+    };
 
     res.json({
       success: true,
-      count: perfumes.length,
-      data: perfumes,
+      count: transformedPerfumes.length,
+      data: {
+        perfumes: transformedPerfumes,
+        pagination,
+      },
     });
   } catch (error) {
+    console.error("Error in getAllPerfumes:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -62,11 +134,33 @@ exports.getPerfumeById = async (req, res) => {
       });
     }
 
+    // Transform data to match frontend expectations
+    const transformedPerfume = {
+      _id: perfume._id,
+      name: perfume.perfumeName, // Map perfumeName to name
+      description: perfume.description,
+      price: perfume.price,
+      size: perfume.volume, // Map volume to size
+      brand: perfume.brand
+        ? {
+            _id: perfume.brand._id,
+            name: perfume.brand.brandName, // Map brandName to name
+          }
+        : null,
+      targetAudience: perfume.targetAudience,
+      concentration: perfume.concentration,
+      ingredients: perfume.ingredients,
+      comments: perfume.comments,
+      createdAt: perfume.createdAt,
+      updatedAt: perfume.updatedAt,
+    };
+
     res.json({
       success: true,
-      data: perfume,
+      data: transformedPerfume,
     });
   } catch (error) {
+    console.error("Error in getPerfumeById:", error);
     res.status(500).json({
       success: false,
       message: error.message,

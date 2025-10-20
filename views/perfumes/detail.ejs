@@ -1,46 +1,52 @@
 <div class="container py-4">
+  <div class="row">
+    <div class="col-12 mb-3">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="/perfumes">Perfumes</a></li>
+          <li
+            class="breadcrumb-item active"
+            aria-current="page"
+            id="perfume-name"
+          >
+            Loading...
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <div id="perfume-detail">
+    <!-- Loading spinner -->
     <div class="row">
-        <div class="col-12 mb-3">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/perfumes">Perfumes</a></li>
-                    <li class="breadcrumb-item active" aria-current="page" id="perfume-name">Loading...</li>
-                </ol>
-            </nav>
+      <div class="col-12 text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
         </div>
+        <p class="mt-2">Loading perfume details...</p>
+      </div>
     </div>
-    
-    <div id="perfume-detail">
-        <!-- Loading spinner -->
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p class="mt-2">Loading perfume details...</p>
-            </div>
-        </div>
-    </div>
+  </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const perfumeId = '<%= perfumeId %>';
+  document.addEventListener("DOMContentLoaded", function () {
+    const perfumeId = "<%= perfumeId %>";
     loadPerfumeDetail(perfumeId);
-});
+  });
 
-async function loadPerfumeDetail(perfumeId) {
-    const container = document.getElementById('perfume-detail');
-    
+  async function loadPerfumeDetail(perfumeId) {
+    const container = document.getElementById("perfume-detail");
+
     try {
-        const response = await fetch(`/api/perfumes/${perfumeId}`);
-        const data = await response.json();
-        
-        if (data.success) {
-            displayPerfumeDetail(data.data);
-        } else {
-            container.innerHTML = `
+      const response = await fetch(`/api/perfumes/${perfumeId}`);
+      const data = await response.json();
+
+      if (data.success) {
+        displayPerfumeDetail(data.data);
+      } else {
+        container.innerHTML = `
                 <div class="row">
                     <div class="col-12">
                         <div class="alert alert-warning">
@@ -53,9 +59,9 @@ async function loadPerfumeDetail(perfumeId) {
                     </div>
                 </div>
             `;
-        }
+      }
     } catch (error) {
-        container.innerHTML = `
+      container.innerHTML = `
             <div class="row">
                 <div class="col-12">
                     <div class="alert alert-danger">
@@ -69,14 +75,14 @@ async function loadPerfumeDetail(perfumeId) {
             </div>
         `;
     }
-}
+  }
 
-function displayPerfumeDetail(perfume) {
+  function displayPerfumeDetail(perfume) {
     // Update breadcrumb
-    document.getElementById('perfume-name').textContent = perfume.name;
-    
-    const container = document.getElementById('perfume-detail');
-    
+    document.getElementById("perfume-name").textContent = perfume.name;
+
+    const container = document.getElementById("perfume-detail");
+
     container.innerHTML = `
         <div class="row">
             <div class="col-lg-6 mb-4">
@@ -93,7 +99,7 @@ function displayPerfumeDetail(perfume) {
                 <div class="mb-3">
                     <span class="badge bg-primary fs-6 me-2">
                         <i class="fas fa-tags me-1"></i>
-                        ${perfume.brand?.name || 'Unknown Brand'}
+                        ${perfume.brand?.name || "Unknown Brand"}
                     </span>
                     <span class="badge bg-secondary fs-6">
                         <i class="fas fa-flask me-1"></i>
@@ -107,25 +113,40 @@ function displayPerfumeDetail(perfume) {
                 
                 <div class="mb-4">
                     <h5>Description</h5>
-                    <p class="text-muted">${perfume.description || 'No description available for this perfume.'}</p>
+                    <p class="text-muted">${
+                      perfume.description ||
+                      "No description available for this perfume."
+                    }</p>
                 </div>
                 
                 <div class="mb-4">
                     <h5>Details</h5>
                     <ul class="list-unstyled">
                         <li><strong>Size:</strong> ${perfume.size}ml</li>
-                        <li><strong>Brand:</strong> ${perfume.brand?.name || 'Unknown'}</li>
+                        <li><strong>Brand:</strong> ${
+                          perfume.brand?.name || "Unknown"
+                        }</li>
                         <li><strong>Price:</strong> $${perfume.price}</li>
-                        ${perfume.releaseDate ? `<li><strong>Release Date:</strong> ${new Date(perfume.releaseDate).toLocaleDateString()}</li>` : ''}
+                        ${
+                          perfume.releaseDate
+                            ? `<li><strong>Release Date:</strong> ${new Date(
+                                perfume.releaseDate
+                              ).toLocaleDateString()}</li>`
+                            : ""
+                        }
                     </ul>
                 </div>
                 
                 <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                    <button class="btn btn-success btn-lg" onclick="addToCart('${perfume._id}')">
+                    <button class="btn btn-success btn-lg" onclick="addToCart('${
+                      perfume._id
+                    }')">
                         <i class="fas fa-shopping-cart me-2"></i>
                         Add to Cart
                     </button>
-                    <button class="btn btn-outline-primary btn-lg" onclick="addToWishlist('${perfume._id}')">
+                    <button class="btn btn-outline-primary btn-lg" onclick="addToWishlist('${
+                      perfume._id
+                    }')">
                         <i class="fas fa-heart me-2"></i>
                         Add to Wishlist
                     </button>
@@ -154,33 +175,37 @@ function displayPerfumeDetail(perfume) {
             </div>
         </div>
     `;
-    
+
     // Load related perfumes
     loadRelatedPerfumes(perfume.brand?._id, perfume._id);
-}
+  }
 
-async function loadRelatedPerfumes(brandId, currentPerfumeId) {
+  async function loadRelatedPerfumes(brandId, currentPerfumeId) {
     if (!brandId) return;
-    
-    const container = document.getElementById('related-perfumes');
-    
+
+    const container = document.getElementById("related-perfumes");
+
     try {
-        const response = await fetch(`/api/perfumes?brand=${brandId}&limit=4`);
-        const data = await response.json();
-        
-        if (data.success) {
-            const relatedPerfumes = data.data.perfumes.filter(p => p._id !== currentPerfumeId).slice(0, 4);
-            
-            if (relatedPerfumes.length === 0) {
-                container.innerHTML = `
+      const response = await fetch(`/api/perfumes?brand=${brandId}&limit=4`);
+      const data = await response.json();
+
+      if (data.success) {
+        const relatedPerfumes = data.data.perfumes
+          .filter((p) => p._id !== currentPerfumeId)
+          .slice(0, 4);
+
+        if (relatedPerfumes.length === 0) {
+          container.innerHTML = `
                     <div class="col-12">
                         <p class="text-muted">No related perfumes found.</p>
                     </div>
                 `;
-                return;
-            }
-            
-            container.innerHTML = relatedPerfumes.map(perfume => `
+          return;
+        }
+
+        container.innerHTML = relatedPerfumes
+          .map(
+            (perfume) => `
                 <div class="col-lg-3 col-md-6 mb-3">
                     <div class="card h-100">
                         <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
@@ -188,32 +213,40 @@ async function loadRelatedPerfumes(brandId, currentPerfumeId) {
                         </div>
                         <div class="card-body">
                             <h6 class="card-title">${perfume.name}</h6>
-                            <p class="card-text small text-muted">${perfume.brand?.name || 'Unknown Brand'}</p>
+                            <p class="card-text small text-muted">${
+                              perfume.brand?.name || "Unknown Brand"
+                            }</p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-primary">$${perfume.price}</span>
-                                <a href="/perfumes/${perfume._id}" class="btn btn-sm btn-outline-primary">View</a>
+                                <span class="text-primary">$${
+                                  perfume.price
+                                }</span>
+                                <a href="/perfumes/${
+                                  perfume._id
+                                }" class="btn btn-sm btn-outline-primary">View</a>
                             </div>
                         </div>
                     </div>
                 </div>
-            `).join('');
-        }
+            `
+          )
+          .join("");
+      }
     } catch (error) {
-        container.innerHTML = `
+      container.innerHTML = `
             <div class="col-12">
                 <p class="text-muted">Error loading related perfumes.</p>
             </div>
         `;
     }
-}
+  }
 
-function addToCart(perfumeId) {
+  function addToCart(perfumeId) {
     // TODO: Implement add to cart functionality
-    alert('Add to cart functionality will be implemented soon!');
-}
+    alert("Add to cart functionality will be implemented soon!");
+  }
 
-function addToWishlist(perfumeId) {
+  function addToWishlist(perfumeId) {
     // TODO: Implement add to wishlist functionality
-    alert('Add to wishlist functionality will be implemented soon!');
-}
+    alert("Add to wishlist functionality will be implemented soon!");
+  }
 </script>
