@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const expressLayouts = require("express-ejs-layouts");
 const connectDB = require("./config/database");
 
 // Load environment variables
@@ -11,12 +12,26 @@ connectDB();
 
 const app = express();
 
+// Set EJS as template engine
+app.set("view engine", "ejs");
+app.set("views", "./views");
+
+// Use express-ejs-layouts
+app.use(expressLayouts);
+app.set("layout", "layouts/main");
+
+// Static files
+app.use(express.static("public"));
+
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
+// UI Routes
+app.use("/", require("./routes/uiRoutes"));
+
+// API Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/brands", require("./routes/brandRoutes"));
 app.use("/api/perfumes", require("./routes/perfumeRoutes"));
