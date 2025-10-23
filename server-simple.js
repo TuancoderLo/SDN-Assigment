@@ -47,8 +47,8 @@ app.use(async (req, res, next) => {
   // Set default values for all views
   res.locals.user = null;
   res.locals.isAdmin = false;
-  res.locals.title = 'Perfume Store';
-  res.locals.page = 'home';
+  res.locals.title = "Perfume Store";
+  res.locals.page = "home";
 
   let token = null;
 
@@ -56,11 +56,13 @@ app.use(async (req, res, next) => {
     // Check for token in cookies or Authorization header
     if (req.cookies && req.cookies.token) {
       token = req.cookies.token;
+      console.log("🍪 Token from cookie:", token.substring(0, 20) + "...");
     } else if (
       req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer")
     ) {
       token = req.headers.authorization.split(" ")[1];
+      console.log("🔑 Token from header:", token.substring(0, 20) + "...");
     }
 
     if (token) {
@@ -72,11 +74,19 @@ app.use(async (req, res, next) => {
       if (user) {
         res.locals.user = user;
         res.locals.isAdmin = user.isAdmin;
+        console.log(
+          "✅ User authenticated:",
+          user.email,
+          "Admin:",
+          user.isAdmin
+        );
       }
+    } else {
+      console.log("❌ No token found in request");
     }
   } catch (error) {
     // Token invalid, clear cookie
-    console.log('Auth middleware error:', error.message);
+    console.log("⚠️ Auth middleware error:", error.message);
     if (res.clearCookie) {
       res.clearCookie("token");
     }

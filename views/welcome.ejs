@@ -1,0 +1,146 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <% // Safe check for variables with defaults const currentUser = (typeof
+      user !== 'undefined') ? user : null; const isUserAdmin = (typeof isAdmin
+      !== 'undefined') ? isAdmin : false; %> <% if (currentUser) { %>
+      <!-- Logged In User -->
+      <div class="card shadow-lg">
+        <div class="card-header bg-success text-white">
+          <h3 class="mb-0">
+            <i class="fas fa-check-circle me-2"></i>
+            Login Successful!
+          </h3>
+        </div>
+        <div class="card-body p-4">
+          <div class="text-center mb-4">
+            <i class="fas fa-user-circle fa-5x text-success mb-3"></i>
+            <h4>Welcome back, <%= currentUser.name %>!</h4>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h6 class="text-muted mb-2">
+                    <i class="fas fa-envelope me-2"></i>Email
+                  </h6>
+                  <p class="mb-0"><%= currentUser.email %></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h6 class="text-muted mb-2">
+                    <i class="fas fa-shield-alt me-2"></i>Role
+                  </h6>
+                  <p class="mb-0">
+                    <% if (isUserAdmin) { %>
+                    <span class="badge bg-warning text-dark">
+                      <i class="fas fa-crown me-1"></i>Administrator
+                    </span>
+                    <% } else { %>
+                    <span class="badge bg-primary">
+                      <i class="fas fa-user me-1"></i>Member
+                    </span>
+                    <% } %>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h6 class="text-muted mb-2">
+                    <i class="fas fa-calendar me-2"></i>Year of Birth
+                  </h6>
+                  <p class="mb-0"><%= currentUser.YOB || 'Not specified' %></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h6 class="text-muted mb-2">
+                    <i class="fas fa-venus-mars me-2"></i>Gender
+                  </h6>
+                  <p class="mb-0">
+                    <% if (typeof currentUser.gender !== 'undefined') { %> <%=
+                    currentUser.gender ? 'Male' : 'Female' %> <% } else { %> Not
+                    specified <% } %>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr />
+
+          <div class="alert alert-info">
+            <h6><i class="fas fa-info-circle me-2"></i>Quick Actions:</h6>
+            <div class="d-grid gap-2">
+              <% if (isUserAdmin) { %>
+              <a href="/admin" class="btn btn-warning">
+                <i class="fas fa-cog me-2"></i>Go to Admin Dashboard
+              </a>
+              <% } %>
+              <a href="/perfumes" class="btn btn-primary">
+                <i class="fas fa-spray-can me-2"></i>Browse Perfumes
+              </a>
+              <a href="/profile" class="btn btn-secondary">
+                <i class="fas fa-user-edit me-2"></i>Edit Profile
+              </a>
+            </div>
+          </div>
+
+          <div class="text-center mt-4">
+            <a href="/" class="btn btn-outline-primary">
+              <i class="fas fa-home me-2"></i>Go to Home
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <% } else { %>
+      <!-- Not Logged In -->
+      <div class="card shadow-lg">
+        <div class="card-header bg-danger text-white">
+          <h3 class="mb-0">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Not Logged In
+          </h3>
+        </div>
+        <div class="card-body p-4 text-center">
+          <i class="fas fa-user-slash fa-5x text-danger mb-4"></i>
+          <h4>You are not logged in</h4>
+          <p class="text-muted mb-4">
+            Please login to access your account and enjoy all features.
+          </p>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+            <a href="/login" class="btn btn-primary btn-lg">
+              <i class="fas fa-sign-in-alt me-2"></i>Login
+            </a>
+            <a href="/register" class="btn btn-success btn-lg">
+              <i class="fas fa-user-plus me-2"></i>Register
+            </a>
+          </div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    transition: transform 0.3s;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+  }
+</style>

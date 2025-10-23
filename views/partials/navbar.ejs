@@ -1,9 +1,7 @@
-<%
-// Safe check for variables with defaults
-const currentUser = (typeof user !== 'undefined') ? user : null;
-const isUserAdmin = (typeof isAdmin !== 'undefined') ? isAdmin : false;
-const currentPage = (typeof page !== 'undefined') ? page : '';
-%>
+<% // Safe check for variables with defaults const currentUser = (typeof user
+!== 'undefined') ? user : null; const isUserAdmin = (typeof isAdmin !==
+'undefined') ? isAdmin : false; const currentPage = (typeof page !==
+'undefined') ? page : ''; %>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="container">
     <a class="navbar-brand" href="/">
@@ -23,7 +21,10 @@ const currentPage = (typeof page !== 'undefined') ? page : '';
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link <%= currentPage === 'home' ? 'active' : '' %>" href="/">
+          <a
+            class="nav-link <%= currentPage === 'home' ? 'active' : '' %>"
+            href="/"
+          >
             <i class="fas fa-home me-1"></i>Home
           </a>
         </li>
@@ -71,9 +72,9 @@ const currentPage = (typeof page !== 'undefined') ? page : '';
             role="button"
             data-bs-toggle="dropdown"
           >
-            <i class="fas fa-user me-1"></i><%= currentUser.name %> 
-            <% if (isUserAdmin) { %>
-              <span class="badge bg-warning text-dark ms-1">Admin</span>
+            <i class="fas fa-user me-1"></i><%= currentUser.name %> <% if
+            (isUserAdmin) { %>
+            <span class="badge bg-warning text-dark ms-1">Admin</span>
             <% } %>
           </a>
           <ul class="dropdown-menu">

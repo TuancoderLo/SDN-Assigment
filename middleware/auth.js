@@ -65,10 +65,16 @@ exports.adminOnly = (req, res, next) => {
   if (req.user && req.user.isAdmin) {
     next();
   } else {
-    res.status(403).json({
-      success: false,
-      message: "Not authorized, admin access only",
-    });
+    // Check if this is an API request or UI request
+    if (req.originalUrl.startsWith("/api/")) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized, admin access only",
+      });
+    } else {
+      // For UI requests, redirect to home with error message
+      return res.redirect("/?error=admin-required");
+    }
   }
 };
 

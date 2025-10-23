@@ -74,54 +74,82 @@
 </div>
 
 <script>
-// Load featured perfumes
-async function loadFeaturedPerfumes() {
-  const container = document.getElementById('featured-perfumes');
-  
-  try {
-    const response = await fetch('/api/perfumes?limit=6');
-    const data = await response.json();
-    
-    if (data.success && data.data && data.data.perfumes && data.data.perfumes.length > 0) {
-      container.innerHTML = data.data.perfumes.map(perfume => `
+  // Load featured perfumes
+  async function loadFeaturedPerfumes() {
+    const container = document.getElementById("featured-perfumes");
+
+    try {
+      const response = await fetch("/api/perfumes?limit=6");
+      const data = await response.json();
+
+      if (
+        data.success &&
+        data.data &&
+        data.data.perfumes &&
+        data.data.perfumes.length > 0
+      ) {
+        container.innerHTML = data.data.perfumes
+          .map(
+            (perfume) => `
         <div class="col-md-4 mb-4">
           <div class="card h-100 shadow-sm">
-            ${perfume.uri ? `
-              <img src="${perfume.uri}" class="card-img-top" style="height: 200px; object-fit: cover;" 
+            ${
+              perfume.uri
+                ? `
+              <img src="${
+                perfume.uri
+              }" class="card-img-top" style="height: 200px; object-fit: cover;" 
                    alt="${perfume.name || perfume.perfumeName}" 
                    onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
-            ` : `
+            `
+                : `
               <div style="height: 200px; background: #6c757d;" class="d-flex align-items-center justify-content-center">
                 <i class="fas fa-spray-can fa-4x text-white"></i>
               </div>
-            `}
+            `
+            }
             <div class="card-body">
               <h5 class="card-title">${perfume.name || perfume.perfumeName}</h5>
               <div class="mb-2">
                 <span class="badge bg-primary">
-                  ${perfume.brand && (perfume.brand.name || perfume.brand.brandName) ? 
-                    (perfume.brand.name || perfume.brand.brandName) : 'Unknown Brand'}
+                  ${
+                    perfume.brand &&
+                    (perfume.brand.name || perfume.brand.brandName)
+                      ? perfume.brand.name || perfume.brand.brandName
+                      : "Unknown Brand"
+                  }
                 </span>
                 <span class="badge bg-success">$${perfume.price}</span>
-                <span class="badge bg-info">${perfume.volume || perfume.size || 100}ml</span>
+                <span class="badge bg-info">${
+                  perfume.volume || perfume.size || 100
+                }ml</span>
               </div>
               <p class="card-text text-muted small">
-                ${(perfume.description || 'No description available').substring(0, 100)}...
+                ${(perfume.description || "No description available").substring(
+                  0,
+                  100
+                )}...
               </p>
               <div class="d-flex justify-content-between align-items-center">
                 <small class="text-muted">
-                  <i class="fas fa-user me-1"></i>${perfume.targetAudience || 'Unisex'}
+                  <i class="fas fa-user me-1"></i>${
+                    perfume.targetAudience || "Unisex"
+                  }
                 </small>
-                <a href="/perfumes/${perfume._id}" class="btn btn-sm btn-primary">
+                <a href="/perfumes/${
+                  perfume._id
+                }" class="btn btn-sm btn-primary">
                   <i class="fas fa-eye me-1"></i>View
                 </a>
               </div>
             </div>
           </div>
         </div>
-      `).join('');
-    } else {
-      container.innerHTML = `
+      `
+          )
+          .join("");
+      } else {
+        container.innerHTML = `
         <div class="col-12">
           <div class="alert alert-info text-center">
             <i class="fas fa-info-circle me-2"></i>
@@ -129,10 +157,10 @@ async function loadFeaturedPerfumes() {
           </div>
         </div>
       `;
-    }
-  } catch (error) {
-    console.error('Error loading perfumes:', error);
-    container.innerHTML = `
+      }
+    } catch (error) {
+      console.error("Error loading perfumes:", error);
+      container.innerHTML = `
       <div class="col-12">
         <div class="alert alert-danger text-center">
           <i class="fas fa-exclamation-triangle me-2"></i>
@@ -140,9 +168,9 @@ async function loadFeaturedPerfumes() {
         </div>
       </div>
     `;
+    }
   }
-}
 
-// Load on page ready
-document.addEventListener('DOMContentLoaded', loadFeaturedPerfumes);
+  // Load on page ready
+  document.addEventListener("DOMContentLoaded", loadFeaturedPerfumes);
 </script>

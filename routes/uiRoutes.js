@@ -3,17 +3,34 @@ const router = express.Router();
 
 // Test page - for debugging
 router.get("/test", (req, res) => {
-  res.render("test");
+  res.render("test", {
+    title: "Test Page",
+    page: "test",
+  });
 });
 
 // Simple test page - no layout
 router.get("/simple", (req, res) => {
-  res.render("simple");
+  res.render("simple", {
+    title: "Simple Test",
+    page: "simple",
+  });
 });
 
 // Home page without layout - for testing
 router.get("/home-test", (req, res) => {
-  res.render("index-no-layout");
+  res.render("index-no-layout", {
+    title: "Home Test",
+    page: "home",
+  });
+});
+
+// Auth debug page
+router.get("/auth-debug", (req, res) => {
+  res.render("auth-debug", {
+    title: "Auth Debug",
+    page: "debug",
+  });
 });
 
 // Home page
@@ -21,6 +38,14 @@ router.get("/", (req, res) => {
   res.render("index", {
     title: "Perfume Store",
     page: "home",
+  });
+});
+
+// Welcome page - to check authentication
+router.get("/welcome", (req, res) => {
+  res.render("welcome", {
+    title: "Welcome - Perfume Store",
+    page: "welcome",
   });
 });
 
