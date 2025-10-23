@@ -1,6 +1,21 @@
 const express = require("express");
 const router = express.Router();
 
+// Test page - for debugging
+router.get("/test", (req, res) => {
+  res.render("test");
+});
+
+// Simple test page - no layout
+router.get("/simple", (req, res) => {
+  res.render("simple");
+});
+
+// Home page without layout - for testing
+router.get("/home-test", (req, res) => {
+  res.render("index-no-layout");
+});
+
 // Home page
 router.get("/", (req, res) => {
   res.render("index", {

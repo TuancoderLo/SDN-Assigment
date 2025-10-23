@@ -275,6 +275,38 @@ async function loadFeaturedPerfumes() {
   }
 }
 
+// Logout function
+async function logout() {
+  try {
+    const response = await fetch("/api/auth/logout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      // Clear any stored tokens
+      localStorage.removeItem("token");
+
+      // Show success message
+      utils.showToast("Logged out successfully", "success");
+
+      // Redirect to home page after short delay
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
+    } else {
+      utils.showToast("Logout failed", "error");
+    }
+  } catch (error) {
+    console.error("Logout error:", error);
+    utils.showToast("Network error during logout", "error");
+  }
+}
+
 // Create toast container if it doesn't exist
 function createToastContainer() {
   const container = document.createElement("div");

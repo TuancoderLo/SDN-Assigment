@@ -3,6 +3,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const expressLayouts = require("express-ejs-layouts");
 const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
 
 // Load environment variables
 dotenv.config();
@@ -32,17 +33,67 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", "./views");
 
-// Use express-ejs-layouts
-app.use(expressLayouts);
-app.set("layout", "layouts/main");
-
 // Static files
 app.use(express.static("public"));
 
 // Middleware
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Middleware to pass user info to all views - BEFORE expressLayouts
+app.use(async (req, res, next) => {
+  // Set default values for all views
+  res.locals.user = null;
+  res.locals.isAdmin = false;
+  res.locals.title = 'Perfume Store';
+  res.locals.page = 'home';
+
+  let token = null;
+
+  try {
+    // Check for token in cookies or Authorization header
+    if (req.cookies && req.cookies.token) {
+      token = req.cookies.token;
+    } else if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+
+    if (token) {
+      const jwt = require("jsonwebtoken");
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const Member = require("./models/Member");
+      const user = await Member.findById(decoded.id).select("-password");
+
+      if (user) {
+        res.locals.user = user;
+        res.locals.isAdmin = user.isAdmin;
+      }
+    }
+  } catch (error) {
+    // Token invalid, clear cookie
+    console.log('Auth middleware error:', error.message);
+    if (res.clearCookie) {
+      res.clearCookie("token");
+    }
+    // Continue with null user
+    res.locals.user = null;
+    res.locals.isAdmin = false;
+  }
+
+  next();
+});
+
+// Use express-ejs-layouts AFTER setting res.locals
+app.use(expressLayouts);
+app.set("layout", "layouts/main");
+// Important: extract scripts and styles to layout
+app.set("layout extractScripts", true);
+app.set("layout extractStyles", true);
 
 // Simple test route
 app.get("/api/test", (req, res) => {
@@ -167,6 +218,16 @@ app.get("/api/perfumes", async (req, res) => {
 
 // UI Routes
 app.use("/", require("./routes/uiRoutes"));
+
+// Admin Routes
+app.use("/", require("./routes/adminRoutes"));
+
+// API Routes
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/brands", require("./routes/brandRoutes"));
+app.use("/api/perfumes", require("./routes/perfumeRoutes"));
+app.use("/api/members", require("./routes/memberRoutes"));
+app.use("/api/collectors", require("./routes/collectorRoutes"));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -1,0 +1,237 @@
+<div class="container-fluid py-4">
+  <!-- Admin Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1 class="display-6">
+          <i class="fas fa-cog me-3"></i>Admin Dashboard
+        </h1>
+        <div class="badge bg-warning text-dark fs-6">
+          <i class="fas fa-user-shield me-1"></i>Admin Access
+        </div>
+      </div>
+      <p class="text-muted">
+        Welcome back, <%= user.name %>! Manage your perfume store from here.
+      </p>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card bg-primary text-white h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h3 class="mb-0"><%= stats.perfumesCount %></h3>
+              <p class="mb-0">Total Perfumes</p>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-spray-can fa-2x"></i>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-primary">
+          <a href="/admin/perfumes" class="text-white text-decoration-none">
+            <i class="fas fa-eye me-1"></i>View Details
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card bg-success text-white h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h3 class="mb-0"><%= stats.brandsCount %></h3>
+              <p class="mb-0">Total Brands</p>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-tags fa-2x"></i>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-success">
+          <a href="/brands" class="text-white text-decoration-none">
+            <i class="fas fa-eye me-1"></i>View Details
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card bg-info text-white h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h3 class="mb-0"><%= stats.membersCount %></h3>
+              <p class="mb-0">Total Members</p>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-users fa-2x"></i>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-info">
+          <a href="/admin/members" class="text-white text-decoration-none">
+            <i class="fas fa-eye me-1"></i>View Details
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card bg-warning text-dark h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h3 class="mb-0"><%= stats.adminsCount %></h3>
+              <p class="mb-0">Admin Users</p>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-user-shield fa-2x"></i>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-warning">
+          <a href="/admin/members" class="text-dark text-decoration-none">
+            <i class="fas fa-eye me-1"></i>View Details
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3 mb-2">
+              <a href="/admin/perfumes" class="btn btn-outline-primary w-100">
+                <i class="fas fa-plus me-2"></i>Add Perfume
+              </a>
+            </div>
+            <div class="col-md-3 mb-2">
+              <button
+                class="btn btn-outline-success w-100"
+                onclick="openAddBrandModal()"
+              >
+                <i class="fas fa-plus me-2"></i>Add Brand
+              </button>
+            </div>
+            <div class="col-md-3 mb-2">
+              <a href="/admin/members" class="btn btn-outline-info w-100">
+                <i class="fas fa-users me-2"></i>View Members
+              </a>
+            </div>
+            <div class="col-md-3 mb-2">
+              <a
+                href="/api/collectors"
+                class="btn btn-outline-warning w-100"
+                target="_blank"
+              >
+                <i class="fas fa-download me-2"></i>Export Members
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="row">
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fas fa-spray-can me-2"></i>Recent Perfumes
+          </h5>
+        </div>
+        <div class="card-body">
+          <% if (recentPerfumes.length === 0) { %>
+          <p class="text-muted">No perfumes found.</p>
+          <% } else { %> <% recentPerfumes.forEach(perfume => { %>
+          <div class="d-flex align-items-center mb-3">
+            <div class="me-3">
+              <div
+                class="bg-primary rounded d-flex align-items-center justify-content-center"
+                style="width: 40px; height: 40px"
+              >
+                <i class="fas fa-spray-can text-white"></i>
+              </div>
+            </div>
+            <div class="flex-grow-1">
+              <h6 class="mb-0"><%= perfume.perfumeName %></h6>
+              <small class="text-muted">
+                <%= perfume.brand?.brandName || 'Unknown Brand' %> • $<%=
+                perfume.price %>
+              </small>
+            </div>
+            <div>
+              <a
+                href="/perfumes/<%= perfume._id %>"
+                class="btn btn-sm btn-outline-primary"
+                >View</a
+              >
+            </div>
+          </div>
+          <% }) %> <% } %>
+        </div>
+        <div class="card-footer">
+          <a href="/admin/perfumes" class="btn btn-primary btn-sm">
+            <i class="fas fa-eye me-1"></i>View All Perfumes
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="fas fa-users me-2"></i>Recent Members</h5>
+        </div>
+        <div class="card-body">
+          <% if (recentMembers.length === 0) { %>
+          <p class="text-muted">No members found.</p>
+          <% } else { %> <% recentMembers.forEach(member => { %>
+          <div class="d-flex align-items-center mb-3">
+            <div class="me-3">
+              <div
+                class="bg-info rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 40px; height: 40px"
+              >
+                <i class="fas fa-user text-white"></i>
+              </div>
+            </div>
+            <div class="flex-grow-1">
+              <h6 class="mb-0">
+                <%= member.name %> <% if (member.isAdmin) { %>
+                <span class="badge bg-warning text-dark ms-1">Admin</span>
+                <% } %>
+              </h6>
+              <small class="text-muted"><%= member.email %></small>
+            </div>
+            <div>
+              <small class="text-muted">
+                <%= new Date(member.createdAt).toLocaleDateString() %>
+              </small>
+            </div>
+          </div>
+          <% }) %> <% } %>
+        </div>
+        <div class="card-footer">
+          <a href="/admin/members" class="btn btn-info btn-sm">
+            <i class="fas fa-eye me-1"></i>View All Members
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
